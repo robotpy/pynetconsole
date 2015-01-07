@@ -1,0 +1,9 @@
+*.pyc
+*.egg-info
+__pycache__
+netconsole/version.py
+
+dist
+
+.project
+.pydevproject
