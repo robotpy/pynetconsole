@@ -15,9 +15,14 @@ try:
 except ImportError:
     from queue import Queue, Empty
 
-def run(UDP_IN_PORT=6666, UDP_OUT_PORT=6668):
+def run(UDP_IN_PORT=6666, UDP_OUT_PORT=6668, init_event=None):
+    '''
+        :param init_event: a threading.event object, upon which the 'set'
+                           function will be called when the connection has
+                           succeeded.
+    '''
 
-    #set up recieving socket
+    #set up receiving socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind( ('',UDP_IN_PORT) )
@@ -45,6 +50,9 @@ def run(UDP_IN_PORT=6666, UDP_OUT_PORT=6668):
             q.put(line)
 
     def enqueue_output_sock(s, q):
+        if init_event is not None:
+            init_event.set()
+        
         while True:
             q.put(s.recv(4096))
 
