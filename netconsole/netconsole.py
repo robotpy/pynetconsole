@@ -15,7 +15,7 @@ try:
 except ImportError:
     from queue import Queue, Empty
 
-def run(UDP_IN_PORT=6666, UDP_OUT_PORT=6668, init_event=None):
+def run(UDP_IN_PORT=6666, UDP_OUT_PORT=6668, init_event=None, bcast_address='255.255.255.255'):
     '''
         :param init_event: a threading.event object, upon which the 'set'
                            function will be called when the connection has
@@ -63,19 +63,18 @@ def run(UDP_IN_PORT=6666, UDP_OUT_PORT=6668, init_event=None):
     stdin_reader.start()
     sock_reader.start()
 
-
     if sys.version_info[0] == 2:
         def print_str(s):
             sys.stdout.write(s)
             
         def send_msg(msg):
-            out.sendto(line, ('255.255.255.255', UDP_OUT_PORT))
+            out.sendto(line, (bcast_address, UDP_OUT_PORT))
     else:
         def print_str(s):
             sys.stdout.write(str(s, 'utf-8'))
 
         def send_msg(msg):
-            out.sendto(line.encode('utf-8'), ('255.255.255.255', UDP_OUT_PORT))
+            out.sendto(line.encode('utf-8'), (bcast_address, UDP_OUT_PORT))
 
     #main loop
     while True:
@@ -92,4 +91,12 @@ def run(UDP_IN_PORT=6666, UDP_OUT_PORT=6668, init_event=None):
         else:
             send_msg(line)
         time.sleep(0.05)
+
+
+def main():
+    bcast_address = None
+    if len(sys.argv) > 1:
+        bcast_address = sys.argv[1]
+
+    run(bcast_address=bcast_address)
 

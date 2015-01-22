@@ -56,6 +56,6 @@ setup(
         'License :: OSI Approved :: ISC License (ISCL)'
     ],
     entry_points = {
-        'console_scripts': ['netconsole = netconsole.netconsole:run']
+        'console_scripts': ['netconsole = netconsole.netconsole:main']
     }
     )
