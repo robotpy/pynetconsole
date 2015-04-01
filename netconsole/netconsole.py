@@ -14,12 +14,34 @@ try:
     from Queue import Queue, Empty
 except ImportError:
     from queue import Queue, Empty
+    
+      
+def _output_fn(s):
+    sys.stdout.write(s) 
 
-def run(UDP_IN_PORT=6666, UDP_OUT_PORT=6668, init_event=None, bcast_address='255.255.255.255'):
+def _input_fn(q):
+    def enqueue_output_file(f, q):
+        for line in iter(f.readline, b''): #thanks to stackoverflow
+            q.put((True, line))
+    
+    stdin_reader = threading.Thread(target = enqueue_output_file, args = (sys.stdin, q))
+    stdin_reader.daemon = True
+    stdin_reader.start()
+
+
+def run(UDP_IN_PORT=6666, UDP_OUT_PORT=6668, init_event=None, bcast_address='255.255.255.255',
+        output_fn=_output_fn, input_fn=_input_fn):
     '''
         :param init_event: a threading.event object, upon which the 'set'
                            function will be called when the connection has
                            succeeded.
+                           
+        :param output_fn:  This function gets called with a string each time
+                           a line is received from the netconsole port
+        :param input_fn:   This function is called once, with a python queue
+                           object that input can be pushed into. Input must
+                           be pushed as a tuple, with the first argument
+                           as 'True' and the second argument as bytes or str
     '''
 
     #set up receiving socket
@@ -42,55 +64,44 @@ def run(UDP_IN_PORT=6666, UDP_OUT_PORT=6668, init_event=None, bcast_address='255
 
     #set up threads to emulate non-blocking io
     #thread-level emulation required for compatibility with windows
-    stdin_queue = Queue()
-    sock_queue = Queue()
-
-    def enqueue_output_file(f, q):
-        for line in iter(f.readline, b''): #thanks to stackoverflow
-            q.put(line)
+    queue = Queue()
 
     def enqueue_output_sock(s, q):
         if init_event is not None:
             init_event.set()
         
         while True:
-            q.put(s.recv(4096))
+            q.put((False, s.recv(4096)))
 
-    stdin_reader = threading.Thread(target = enqueue_output_file, args = (sys.stdin, stdin_queue))
-    sock_reader = threading.Thread(target = enqueue_output_sock, args = (sock, sock_queue))
-    stdin_reader.daemon = True
+    sock_reader = threading.Thread(target = enqueue_output_sock, args = (sock, queue))
     sock_reader.daemon = True
-    stdin_reader.start()
     sock_reader.start()
-
+    
+    input_fn(queue)
+    
     if sys.version_info[0] == 2:
-        def print_str(s):
-            sys.stdout.write(s)
-            
         def send_msg(msg):
-            out.sendto(line, (bcast_address, UDP_OUT_PORT))
+            out.sendto(msg, (bcast_address, UDP_OUT_PORT))
+        
+        do_decode = lambda s: s
     else:
-        def print_str(s):
-            sys.stdout.write(str(s, 'utf-8'))
-
         def send_msg(msg):
-            out.sendto(line.encode('utf-8'), (bcast_address, UDP_OUT_PORT))
-
+            out.sendto(msg.encode('utf-8'), (bcast_address, UDP_OUT_PORT))
+            
+        do_decode = lambda s: str(s, 'utf-8')
+    
     #main loop
     while True:
-        try:
-            msg = sock_queue.get_nowait()
-        except Empty:
-            pass # no output
+        
+        is_input, msg = queue.get()
+        
+        if is_input:
+            if bcast_address is None:
+                sys.stderr.write("Error: Output not supported by netconsole without specifying a broadcast address\n")
+            else:
+                send_msg(msg)
         else:
-            print_str(msg)
-        try:
-            line = stdin_queue.get_nowait()
-        except Empty:
-            pass # no input
-        else:
-            send_msg(line)
-        time.sleep(0.05)
+            output_fn(do_decode(msg))
 
 
 def main():
