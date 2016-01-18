@@ -14,10 +14,11 @@ try:
     from Queue import Queue, Empty
 except ImportError:
     from queue import Queue, Empty
-    
-      
+
+_is_py2 = (sys.version_info[0] == 2)
+
 def _output_fn(s):
-    sys.stdout.write(s) 
+    sys.stdout.write(s.encode(sys.stdout.encoding, errors='replace').decode(sys.stdout.encoding))
 
 def _input_fn(q):
     def enqueue_output_file(f, q):
@@ -79,16 +80,12 @@ def run(UDP_IN_PORT=6666, UDP_OUT_PORT=6668, init_event=None, bcast_address='255
     
     input_fn(queue)
     
-    if sys.version_info[0] == 2:
+    if _is_py2:
         def send_msg(msg):
             out.sendto(msg, (bcast_address, UDP_OUT_PORT))
-        
-        do_decode = lambda s: s
     else:
         def send_msg(msg):
             out.sendto(msg.encode('utf-8'), (bcast_address, UDP_OUT_PORT))
-            
-        do_decode = lambda s: str(s, 'utf-8')
     
     #main loop
     while True:
@@ -101,7 +98,7 @@ def run(UDP_IN_PORT=6666, UDP_OUT_PORT=6668, init_event=None, bcast_address='255
             else:
                 send_msg(msg)
         else:
-            output_fn(do_decode(msg))
+            output_fn(msg.decode('utf-8', errors='replace'))
 
 
 def main():
