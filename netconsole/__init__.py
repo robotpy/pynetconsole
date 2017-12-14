@@ -4,5 +4,8 @@ try:
 except ImportError:
     __version__ = 'master'
     
-from .netconsole import run
+from .netconsole import (
+    Netconsole,
+    run
+)
     

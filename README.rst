@@ -1,18 +1,14 @@
 pynetconsole
 ============
 
-NetConsole is an insecure protocol used in the FIRST Robotics Competition to
-view the output of Robot programs.
+NetConsole (also known as RIOLog) is an insecure protocol used in the FIRST
+Robotics Competition to view the output of Robot programs.
 
-On the cRIO platform, netconsole provides a console interface to vxWorks, with
-input and output support.
+Version 2.x only works with RoboRIOs that are imaged for 2018 or beyond. If you
+need to talk to a robot imaged prior to 2018, use pynetconsole 1.x instead.
 
-On the roboRIO platform, this provides access to output only when your program
-is ran using netconsole-host (which is done automatically for you by the
-C++/Java/python deployment tools).
-
-This implementation has been tested on Python 2 and 3, and should work on
-Windows, Linux, and OSX.
+This implementation requires Python 3, and should work on Windows, Linux, and
+OSX.
 
 Installation
 ============
@@ -26,7 +22,7 @@ Usage
 
 On Windows, you can run netconsole like so::
 
-    py -m netconsole
+    py -3 -m netconsole
 
 On OSX/Linux, you can run netconsole like so::
 
@@ -40,7 +36,5 @@ Please file any bugs you may find on our `github issues tracker <https://github.
 Authors
 =======
 
-This implementation of the netconsole listener was originally written by
-Robert Blair Mason Jr.
-
-It has since been maintained and enhanced by the RobotPy project.
+This implementation of the netconsole listener is derived from the RIOLog
+code created by the GradleRIO project.

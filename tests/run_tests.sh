@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/bash -e
 
-# TODO
-exit 0
+cd "$(dirname $0)"
+
+PYTHONPATH=.. python3 -m pytest "$@"
