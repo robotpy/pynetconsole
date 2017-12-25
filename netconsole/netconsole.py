@@ -13,6 +13,7 @@ __all__ = ['Netconsole', 'main', 'run']
 
 def _output_fn(s):
     sys.stdout.write(s.encode(sys.stdout.encoding, errors='replace').decode(sys.stdout.encoding))
+    sys.stdout.write('\n')
 
 class StreamEOF(IOError):
     pass
@@ -186,10 +187,10 @@ class Netconsole:
     _header = struct.Struct('>Hb')
     _headerSz = _header.size
     
-    _errorFrame = struct.Struct('>dHHiB')
+    _errorFrame = struct.Struct('>fHHiB')
     _errorFrameSz = _errorFrame.size
     
-    _infoFrame = struct.Struct('>dH')
+    _infoFrame = struct.Struct('>fH')
     _infoFrameSz = _infoFrame.size
     
     _slen = struct.Struct('>H')
