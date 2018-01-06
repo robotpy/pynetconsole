@@ -230,6 +230,8 @@ def run(address, connect_event=None, fakeds=False):
     '''
     
     if fakeds:
+        raise NotImplementedError("This will be implemented later in the season; for now, use a real DS")
+
         ds = FakeDS()
         ds.start(address)
         
