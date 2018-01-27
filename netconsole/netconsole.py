@@ -165,6 +165,7 @@ class Netconsole:
                 sys.stderr.write("OK\n")
                 
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+            sock.settimeout(None)
             
             sockrfp = sock.makefile('rb')
             sockwfp = sock.makefile('wb')
