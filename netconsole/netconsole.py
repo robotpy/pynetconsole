@@ -182,7 +182,7 @@ class Netconsole:
             break
     
     #
-    # Message 
+    # Message
     #
         
     _header = struct.Struct('>Hb')
@@ -231,8 +231,6 @@ def run(address, connect_event=None, fakeds=False):
     '''
     
     if fakeds:
-        raise NotImplementedError("This will be implemented later in the season; for now, use a real DS")
-
         ds = FakeDS()
         ds.start(address)
         
@@ -251,4 +249,3 @@ def main():
     args = parser.parse_args()
     
     run(args.address, fakeds=args.fakeds)
-

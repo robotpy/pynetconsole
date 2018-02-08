@@ -12,7 +12,10 @@ class FakeDS:
     
     def start(self, address):
         
+        self.running = True
+        
         self.tcp_socket = socket.create_connection((address, 1740), timeout=3.0)
+        self.tcp_socket.settimeout(5)
         
         self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udp_to = (address, 1110)
