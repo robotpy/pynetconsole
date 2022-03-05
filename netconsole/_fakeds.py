@@ -5,9 +5,9 @@ import threading
 
 class FakeDS:
     """
-        Connects to the robot and convinces it that a DS is connected to it
-    
-        Derived from the FakeDSConnector code in GradleRIO, MIT License, Jaci R
+    Connects to the robot and convinces it that a DS is connected to it
+
+    Derived from the FakeDSConnector code in GradleRIO, MIT License, Jaci R
     """
 
     def start(self, address):

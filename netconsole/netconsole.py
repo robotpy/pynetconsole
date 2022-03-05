@@ -24,7 +24,7 @@ class StreamEOF(IOError):
 
 class Netconsole:
     """
-        Implements the 2018+ netconsole protocol
+    Implements the 2018+ netconsole protocol
     """
 
     TAG_ERROR = 11
@@ -208,7 +208,7 @@ class Netconsole:
 
     def _getStr(self, b, idx):
         sidx = idx + self._slenSz
-        blen, = self._slen.unpack_from(b, idx)
+        (blen,) = self._slen.unpack_from(b, idx)
         nextidx = sidx + blen
         return b[sidx:nextidx].decode("utf-8", errors="replace"), nextidx
 
@@ -220,15 +220,15 @@ class Netconsole:
 
 def run(address, connect_event=None, fakeds=False):
     """
-        Starts the netconsole loop. Note that netconsole will only send output
-        if the DS is connected. If you don't have a DS available, the 'fakeds'
-        flag can be specified to fake a DS connection.
-    
-        :param address: Address of the netconsole server
-        :param connect_event: a threading.event object, upon which the 'set'
-                              function will be called when the connection has
-                              succeeded.
-        :param fakeds: Fake a driver station connection
+    Starts the netconsole loop. Note that netconsole will only send output
+    if the DS is connected. If you don't have a DS available, the 'fakeds'
+    flag can be specified to fake a DS connection.
+
+    :param address: Address of the netconsole server
+    :param connect_event: a threading.event object, upon which the 'set'
+                          function will be called when the connection has
+                          succeeded.
+    :param fakeds: Fake a driver station connection
     """
 
     if fakeds:
