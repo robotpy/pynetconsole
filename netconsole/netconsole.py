@@ -74,7 +74,7 @@ class Netconsole:
     def stop(self):
         with self.cond:
             self.running = False
-            self.cond.notifyAll()
+            self.cond.notify_all()
             self.sock.close()
 
     def _connectionDropped(self):
@@ -83,7 +83,7 @@ class Netconsole:
 
         with self.cond:
             self.sockrfp = None
-            self.cond.notifyAll()
+            self.cond.notify_all()
 
     def _keepAliveReady(self):
         if not self.running:
@@ -176,7 +176,7 @@ class Netconsole:
                 self.sock = sock
                 self.sockrfp = sockrfp
                 self.sockwfp = sockwfp
-                self.cond.notifyAll()
+                self.cond.notify_all()
 
             break
 
